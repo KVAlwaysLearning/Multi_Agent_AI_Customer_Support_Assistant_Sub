@@ -1,0 +1,54 @@
+TECHMART ELECTRONICS - INSTALLATION AND SETUP GUIDE
+
+LAPTOP INITIAL SETUP
+1. Charge your laptop to 100% before first use
+2. Press the power button to turn on
+3. Select your language and region
+4. Connect to your WiFi network
+5. Sign in with your Microsoft account or create one
+6. Complete Windows 11 setup wizard
+7. Run Windows Update (Settings > Update & Security > Windows Update)
+8. Install TechMart Driver Pack from support.techmart.com/drivers
+9. Register your product at warranty.techmart.com
+
+SMARTPHONE INITIAL SETUP
+1. Insert SIM card using the provided tool
+2. Power on by holding the side button
+3. Select language and connect to WiFi
+4. Sign in with Google account or Apple ID
+5. Restore from backup or set up as new device
+6. Enable biometric authentication (fingerprint/face)
+7. Download TechMart app from App Store or Google Play
+
+COMMON INSTALLATION ISSUES
+
+Cannot connect to WiFi:
+1. Forget the network and reconnect
+2. Restart your router
+3. Check if WiFi is enabled in settings
+4. Update network adapter drivers
+
+Bluetooth not working:
+1. Turn Bluetooth off and on again
+2. Remove device from paired list and re-pair
+3. Ensure devices are within 10 meters
+4. Restart both devices
+
+Laptop won't turn on:
+1. Ensure charger is properly connected
+2. Hold power button for 10 seconds (force restart)
+3. Remove battery (if removable), wait 30 seconds, reinsert
+4. Contact support if issue persists
+
+Slow performance:
+1. Check available storage (minimum 10% free space required)
+2. Close unnecessary background apps
+3. Run disk cleanup (Windows: search "Disk Cleanup")
+4. Check for malware with Windows Defender
+5. Perform factory reset if issue persists (backup data first)
+
+DRIVER UPDATES
+- Visit support.techmart.com/drivers
+- Enter your model number
+- Download and install recommended drivers
+- Restart after installation
