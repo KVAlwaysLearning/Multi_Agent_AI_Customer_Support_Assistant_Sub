@@ -1,0 +1,59 @@
+TECHMART ELECTRONICS - USER MANUAL
+
+ACCOUNT MANAGEMENT
+
+Creating an Account:
+1. Visit techmart.com and click "Sign Up"
+2. Enter your email address and create a strong password
+3. Verify your email address via the confirmation link
+4. Complete your profile with name and phone number
+5. Enable two-factor authentication for security
+
+Resetting Password:
+1. Click "Forgot Password" on the login page
+2. Enter your registered email address
+3. Check your email for the reset link (valid for 1 hour)
+4. Create a new password (minimum 8 characters, 1 uppercase, 1 number)
+5. Log in with your new password
+
+Account Locked:
+- Accounts are locked after 5 failed login attempts
+- Wait 30 minutes for automatic unlock
+- Or contact support@techmart.com for immediate unlock
+
+SUBSCRIPTION MANAGEMENT
+
+Upgrading Your Plan:
+1. Log in to your account
+2. Go to Settings > Subscription
+3. Select your desired plan
+4. Enter payment information
+5. Confirm upgrade - takes effect immediately
+
+Cancelling Subscription:
+1. Go to Settings > Subscription > Cancel Plan
+2. Confirm cancellation
+3. Access continues until end of billing period
+4. Data retained for 30 days after cancellation
+
+CLOUD STORAGE
+
+Accessing Cloud Storage:
+- Visit cloud.techmart.com or use the TechMart app
+- Upload files by dragging and dropping
+- Share files by right-clicking and selecting "Share"
+- Storage resets monthly for Basic plan
+
+SUPPORT AND FEEDBACK
+
+Submitting a Support Ticket:
+1. Log in to your account
+2. Go to Help > Submit Ticket
+3. Describe your issue in detail
+4. Attach screenshots if relevant
+5. Expect response within 24 hours (4 hours for Premium)
+
+Providing Feedback:
+- Rate your support experience after each interaction
+- Submit product feedback at feedback.techmart.com
+- Join our beta program at beta.techmart.com
