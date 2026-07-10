@@ -1,0 +1,47 @@
+TECHMART ELECTRONICS - PRODUCT CATALOG
+
+TECHMART ULTRABOOK 13"
+- Display: 13.3" 2K IPS, 400 nits
+- Processor: Intel Core Ultra 7
+- RAM: 16GB LPDDR5
+- Storage: 512GB NVMe SSD
+- Battery: 12 hours
+- Weight: 1.2kg
+- OS: Windows 11 Home
+- Best for: Students, travel, everyday productivity
+
+TECHMART PROBOOK 14"
+- Display: 14" 2.8K OLED, 120Hz
+- Processor: Intel Core Ultra 9
+- RAM: 32GB LPDDR5X
+- Storage: 1TB NVMe SSD
+- Battery: 10 hours
+- Weight: 1.5kg
+- OS: Windows 11 Pro
+- Best for: Professionals, creative work, developers
+
+TECHMART PHONE PRO
+- Display: 6.7" Super AMOLED, 120Hz
+- Processor: TechMart Chip X2
+- RAM: 12GB
+- Storage: 256GB (expandable to 1TB)
+- Camera: 50MP main + 12MP ultrawide + 10MP telephoto
+- Battery: 5000mAh, 65W fast charging
+- Water resistance: IP68
+- Best for: Photography, gaming, power users
+
+TECHMART TAB PRO 12"
+- Display: 12.4" LCD, 120Hz
+- Processor: TechMart Chip M1
+- RAM: 8GB
+- Storage: 256GB
+- Battery: 10000mAh (14 hours)
+- Connectivity: WiFi 6E, optional 5G
+- Accessories: Compatible with TechMart Pen and Keyboard
+- Best for: Content creation, note-taking, media consumption
+
+SMART HOME LINEUP
+- TechMart Hub: Controls all smart home devices, voice assistant built-in
+- TechMart Cam Indoor: 1080p, night vision, two-way audio
+- TechMart Cam Outdoor: 4K, weatherproof, motion detection
+- TechMart Smart Plug: Energy monitoring, scheduling, voice control
