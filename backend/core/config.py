@@ -33,10 +33,10 @@ class Settings(BaseSettings):
 
     # --- RAG ---
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-    DISABLE_EMBEDDINGS: bool = os.getenv("DISABLE_EMBEDDINGS", "false").lower() == "true"
     VECTORSTORE_DIR: str = os.getenv("VECTORSTORE_DIR", "./vectorstore_data")
     KNOWLEDGE_BASE_DIR: str = os.getenv("KNOWLEDGE_BASE_DIR", "../knowledge_base")
     RETRIEVAL_TOP_K: int = int(os.getenv("RETRIEVAL_TOP_K", "3"))
+    DISABLE_EMBEDDINGS: bool = os.getenv("DISABLE_EMBEDDINGS", "false").lower() == "true"
 
     class Config:
         env_file = ".env"
