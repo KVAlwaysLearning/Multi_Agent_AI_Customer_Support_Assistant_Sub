@@ -64,22 +64,22 @@ class VectorStore:
             logger.info(f"[RAG] Saved vectorstore to {self.store_dir} ({len(self.metadata)} chunks)")
 
     def load(self):
-    from core.config import settings
-    if settings.DISABLE_EMBEDDINGS:
-        logger.info("[RAG] Embeddings disabled - retrieval will return empty results.")
-        self.index = None
-        self.metadata = []
-        return
-    import faiss
-    if os.path.exists(self.index_path) and os.path.exists(self.meta_path):
-        self.index = faiss.read_index(self.index_path)
-        with open(self.meta_path) as f:
-            self.metadata = json.load(f)
-        logger.info(f"[RAG] Loaded vectorstore ({len(self.metadata)} chunks)")
-    else:
-        logger.info("[RAG] No saved vectorstore found - retrieval returns empty.")
-        self.index = None
-        self.metadata = []
+        from core.config import settings
+        if getattr(settings, 'DISABLE_EMBEDDINGS', False):
+            logger.info("[RAG] Embeddings disabled - retrieval returns empty.")
+            self.index = None
+            self.metadata = []
+            return
+        import faiss
+        if os.path.exists(self.index_path) and os.path.exists(self.meta_path):
+            self.index = faiss.read_index(self.index_path)
+            with open(self.meta_path) as f:
+                self.metadata = json.load(f)
+            logger.info(f"[RAG] Loaded vectorstore ({len(self.metadata)} chunks)")
+        else:
+            logger.info("[RAG] No saved vectorstore - retrieval returns empty.")
+            self.index = None
+            self.metadata = []
 
     def search(self, query: str, top_k: int = 3) -> list[dict]:
         if self.index is None or not self.metadata:
