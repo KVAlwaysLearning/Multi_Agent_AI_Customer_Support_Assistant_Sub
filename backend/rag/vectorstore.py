@@ -19,8 +19,9 @@ def get_embedding_model():
     if _model is None:
         from sentence_transformers import SentenceTransformer
         from core.config import settings
-        logger.info(f"[RAG] Loading embedding model: {settings.EMBEDDING_MODEL}")
-        _model = SentenceTransformer(settings.EMBEDDING_MODEL)
+        model_name = settings.EMBEDDING_MODEL
+        logger.info(f"[RAG] Loading embedding model: {model_name}")
+        _model = SentenceTransformer(model_name, cache_folder="/tmp/models")
     return _model
 
 
@@ -63,16 +64,22 @@ class VectorStore:
             logger.info(f"[RAG] Saved vectorstore to {self.store_dir} ({len(self.metadata)} chunks)")
 
     def load(self):
-        import faiss
-        if os.path.exists(self.index_path) and os.path.exists(self.meta_path):
-            self.index = faiss.read_index(self.index_path)
-            with open(self.meta_path) as f:
-                self.metadata = json.load(f)
-            logger.info(f"[RAG] Loaded vectorstore from {self.store_dir} ({len(self.metadata)} chunks)")
-        else:
-            logger.info("[RAG] No saved vectorstore found - run rag/ingest.py first. Retrieval will return nothing until then.")
-            self.index = None
-            self.metadata = []
+    from core.config import settings
+    if settings.DISABLE_EMBEDDINGS:
+        logger.info("[RAG] Embeddings disabled - retrieval will return empty results.")
+        self.index = None
+        self.metadata = []
+        return
+    import faiss
+    if os.path.exists(self.index_path) and os.path.exists(self.meta_path):
+        self.index = faiss.read_index(self.index_path)
+        with open(self.meta_path) as f:
+            self.metadata = json.load(f)
+        logger.info(f"[RAG] Loaded vectorstore ({len(self.metadata)} chunks)")
+    else:
+        logger.info("[RAG] No saved vectorstore found - retrieval returns empty.")
+        self.index = None
+        self.metadata = []
 
     def search(self, query: str, top_k: int = 3) -> list[dict]:
         if self.index is None or not self.metadata:
