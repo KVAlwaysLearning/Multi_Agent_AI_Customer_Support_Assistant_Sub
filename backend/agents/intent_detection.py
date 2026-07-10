@@ -1,48 +1,85 @@
 """
-BUCKET: Intent Detection Agent.
-
-Wiring is real: this function is genuinely called by the chat pipeline,
-genuinely returns a typed IntentResult, and genuinely calls the LLM layer.
-The CLASSIFICATION LOGIC inside is a placeholder - a simple keyword match -
-so the function is verifiable end-to-end before you write the real
-classifier (rule-based, Banking77-trained model, or LLM-prompted).
-
-To verify: send queries containing "refund", "password", "price", etc.
-and confirm the trace shows the expected intent coming out.
+Intent Detection Agent - uses Llama via Groq for real classification.
+Falls back to keyword matching if LLM fails.
 """
+import json
+import logging
 from models.schemas import IntentResult, IntentLabel
 from core.llm import call_llm
 from core.trace import Trace
 
+logger = logging.getLogger("intent")
+
 KEYWORD_MAP = {
-    IntentLabel.billing: ["bill", "payment", "subscription", "invoice", "charge"],
-    IntentLabel.refund: ["refund", "money back", "cancel order"],
-    IntentLabel.technical: ["login", "password", "error", "bug", "install", "crash"],
-    IntentLabel.product: ["price", "feature", "compare", "available", "pricing"],
-    IntentLabel.complaint: ["complaint", "angry", "disappointed", "unacceptable", "frustrated"],
-    IntentLabel.faq: ["policy", "hours", "contact", "shipping", "warranty"],
+    IntentLabel.billing: ["bill", "payment", "subscription", "invoice",
+                          "charge", "charged", "pay", "paid"],
+    IntentLabel.refund: ["refund", "money back", "cancel order", "return"],
+    IntentLabel.technical: ["login", "password", "error", "bug", "install",
+                            "crash", "not working", "locked", "access"],
+    IntentLabel.product: ["price", "feature", "compare", "available",
+                          "pricing", "cost", "plan", "upgrade"],
+    IntentLabel.complaint: ["complaint", "angry", "disappointed",
+                            "unacceptable", "frustrated", "terrible", "worst"],
+    IntentLabel.faq: ["policy", "hours", "contact", "shipping",
+                      "warranty", "how do i", "what is"],
 }
+
+SYSTEM_PROMPT = """You are an intent classifier for a customer support system.
+Classify the customer message into exactly one of these intents:
+- billing: payment issues, invoices, subscriptions, charges
+- refund: refund requests, returns, money back
+- technical: login problems, errors, installation, bugs, access issues
+- product: product features, pricing, comparisons, availability
+- complaint: complaints, dissatisfaction, angry customers
+- faq: general questions, policies, shipping, warranty, contact info
+
+Respond with ONLY a JSON object like this:
+{"intent": "billing", "confidence": 0.95}
+
+No other text. Just the JSON."""
 
 
 def detect_intent(query: str, trace: Trace) -> IntentResult:
-    # --- BUCKET START: replace this block with real classification logic ---
+    # Try LLM classification first
+    try:
+        raw = call_llm(
+            system_prompt=SYSTEM_PROMPT,
+            user_prompt=f"Customer message: {query}",
+            agent_name="intent_detection"
+        )
+        # Parse JSON response
+        raw = raw.strip()
+        if raw.startswith("{"):
+            parsed = json.loads(raw)
+            intent_str = parsed.get("intent", "faq")
+            confidence = float(parsed.get("confidence", 0.7))
+            intent = IntentLabel(intent_str)
+            result = IntentResult(intent=intent, confidence=confidence,
+                                  raw_query=query)
+            trace.log("intent_detection", {
+                "intent": intent.value,
+                "confidence": confidence,
+                "method": "llm"
+            })
+            return result
+    except Exception as e:
+        logger.warning(f"LLM intent failed, using keywords: {e}")
+
+    # Keyword fallback
     lowered = query.lower()
-    matched = IntentLabel.faq  # default fallback bucket
-    confidence = 0.3
+    matched = IntentLabel.faq
+    confidence = 0.4
     for label, keywords in KEYWORD_MAP.items():
         if any(kw in lowered for kw in keywords):
             matched = label
-            confidence = 0.6
+            confidence = 0.65
             break
 
-    # Demonstrates the LLM wiring is connected too (stub mode until GROQ_API_KEY is set)
-    _ = call_llm(
-        system_prompt="You are an intent classifier. (placeholder - not used to decide yet)",
-        user_prompt=query,
-        agent_name="intent_detection",
-    )
-    # --- BUCKET END ---
-
-    result = IntentResult(intent=matched, confidence=confidence, raw_query=query)
-    trace.log("intent_detection", {"intent": matched.value, "confidence": confidence})
+    result = IntentResult(intent=matched, confidence=confidence,
+                          raw_query=query)
+    trace.log("intent_detection", {
+        "intent": matched.value,
+        "confidence": confidence,
+        "method": "keyword_fallback"
+    })
     return result
