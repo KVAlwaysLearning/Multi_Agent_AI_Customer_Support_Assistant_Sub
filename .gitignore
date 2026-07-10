@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.env
+backend/.env
+frontend/.env
+frontend/.env.local
+node_modules/
+.next/
+backend/vectorstore_data/
+.pytest_cache/
+*.log
+datasets/**/*.csv
+datasets/**/*.json
+!datasets/**/download.py

@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: customer-support-ai-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+    rootDir: backend
+    envVars:
+      - key: ENV
+        value: production
+      - key: FRONTEND_ORIGIN
+        sync: false   # set to your deployed Vercel URL after first deploy
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GROQ_API_KEY
+        sync: false   # add later, see Section E of the build checklist
+      - key: GROQ_MODEL
+        value: llama-3.1-8b-instant
+      - key: MONGO_URI
+        sync: false   # add your MongoDB Atlas connection string
+      - key: MONGO_DB_NAME
+        value: customer_support_ai
+      - key: EMBEDDING_MODEL
+        value: sentence-transformers/all-MiniLM-L6-v2
+      - key: VECTORSTORE_DIR
+        value: ./vectorstore_data
+      - key: KNOWLEDGE_BASE_DIR
+        value: ../knowledge_base
+      - key: RETRIEVAL_TOP_K
+        value: "3"
