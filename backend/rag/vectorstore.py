@@ -66,7 +66,7 @@ class VectorStore:
     def load(self):
         from core.config import settings
         if getattr(settings, 'DISABLE_EMBEDDINGS', False):
-            logger.info("[RAG] Embeddings disabled - retrieval returns empty.")
+            logger.info("[RAG] Embeddings disabled.")
             self.index = None
             self.metadata = []
             return
@@ -77,13 +77,14 @@ class VectorStore:
                 self.metadata = json.load(f)
             logger.info(f"[RAG] Loaded vectorstore ({len(self.metadata)} chunks)")
         else:
-            logger.info("[RAG] No saved vectorstore - retrieval returns empty.")
+            logger.info("[RAG] No vectorstore found - retrieval returns empty.")
             self.index = None
             self.metadata = []
 
     def search(self, query: str, top_k: int = 3) -> list[dict]:
         if self.index is None or not self.metadata:
             return []
+        # Lazy load embedding model only when searching
         q_vector = embed_texts([query])
         distances, indices = self.index.search(q_vector, top_k)
         results = []
@@ -91,5 +92,9 @@ class VectorStore:
             if idx == -1 or idx >= len(self.metadata):
                 continue
             meta = self.metadata[idx]
-            results.append({"text": meta["text"], "source_document": meta["source_document"], "score": float(dist)})
+            results.append({
+                "text": meta["text"],
+                "source_document": meta["source_document"],
+                "score": float(dist)
+            })
         return results
