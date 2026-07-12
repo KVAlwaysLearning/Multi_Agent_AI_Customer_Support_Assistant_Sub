@@ -35,6 +35,18 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
+    const id = getOrCreateSessionId();
+    setSessionId(id);
+
+    // Wake up Render backend immediately on page load
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/health`).catch(() => {});
+
+    getHistory(id)
+      .then((d) => setMessages(d.messages || []))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
     window.scrollTo(0, document.body.scrollHeight);
   }, [messages, isTyping]);
 
