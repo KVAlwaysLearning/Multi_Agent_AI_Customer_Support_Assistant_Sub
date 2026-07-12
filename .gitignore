@@ -11,3 +11,4 @@ node_modules/
 datasets/**/*.csv
 datasets/**/*.json
 !datasets/**/download.py
+!datasets/**/benchmark.py
