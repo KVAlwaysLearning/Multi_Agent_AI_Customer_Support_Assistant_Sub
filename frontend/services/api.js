@@ -5,8 +5,11 @@
  */
 import axios from "axios";
 
+const BASE = process.env.NEXT_PUBLIC_API_URL;
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: BASE,
+  timeout: 120000, // 2 minutes - handles Render cold start
 });
 
 api.interceptors.request.use((config) => {
@@ -18,23 +21,30 @@ api.interceptors.request.use((config) => {
 });
 
 export async function sendMessage(sessionId, message) {
-  const { data } = await api.post("/chat", { session_id: sessionId, message });
-  return data; // { response, agents_used, trace }
+  const { data } = await api.post("/chat", {
+    session_id: sessionId,
+    message,
+  });
+  return data;
 }
 
 export async function getHistory(sessionId) {
   const { data } = await api.get(`/conversations/${sessionId}`);
-  return data; // { session_id, messages }
+  return data;
 }
 
 export async function register(email, password, name) {
-  const { data } = await api.post("/auth/register", { email, password, name });
-  return data; // { access_token }
+  const { data } = await api.post("/auth/register", {
+    email,
+    password,
+    name,
+  });
+  return data;
 }
 
 export async function login(email, password) {
   const { data } = await api.post("/auth/login", { email, password });
-  return data; // { access_token }
+  return data;
 }
 
 export default api;
