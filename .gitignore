@@ -6,7 +6,6 @@ frontend/.env
 frontend/.env.local
 node_modules/
 .next/
-backend/vectorstore_data/
 .pytest_cache/
 *.log
 datasets/**/*.csv
