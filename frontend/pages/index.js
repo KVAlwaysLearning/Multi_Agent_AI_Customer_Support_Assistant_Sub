@@ -58,7 +58,7 @@ export default function Chat() {
         },
       ]);
     } catch {
-      setError("Could not reach the server. Please try again.");
+      setError("Server is waking up (free tier). Please wait 30 seconds and try again.");
     } finally {
       setIsTyping(false);
     }
