@@ -43,14 +43,17 @@ def chat(req: ChatRequest):
     # 3. Routing
     decision = route(intent_result, trace)
 
-    # 4. Invoke agent(s)
+    # 4. Invoke agent(s) with conversation history
+    past_messages = mongo.get_messages(req.session_id)
+    recent_history = past_messages[-6:] if len(past_messages) > 6 else past_messages
+    
     agent_responses = []
     for agent_name in decision.agents:
         agent = AGENT_REGISTRY.get(agent_name)
         if agent is None:
             trace.log("error", {"missing_agent": agent_name})
             continue
-        agent_responses.append(agent.handle(req.message, trace))
+        agent_responses.append(agent.handle(req.message, trace, history=recent_history))
 
     if not agent_responses:
         # Should not happen, but guarantees /chat never silently returns nothing
