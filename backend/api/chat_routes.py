@@ -74,7 +74,7 @@ def chat(req: ChatRequest, user_email: str = Depends(get_current_user)):
 
 
 @router_api.get("/conversations/{session_id}", response_model=ConversationHistory)
-def get_conversation(session_id: str):
+def get_conversation(session_id: str, user_email: str = Depends(get_current_user)):
     raw = mongo.get_messages(session_id)
     messages = [
         Message(role=m["role"], text=m["text"], agent_used=m.get("agent_used"), timestamp=m["timestamp"])
