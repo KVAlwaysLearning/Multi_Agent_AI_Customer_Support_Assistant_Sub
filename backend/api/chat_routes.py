@@ -16,6 +16,7 @@ from agents.technical import TechnicalAgent
 from agents.product import ProductAgent
 from agents.complaint import ComplaintAgent
 from agents.faq import FAQAgent
+from database import mongo
 from api.auth_routes import get_current_user
 
 router_api = APIRouter(tags=["chat"])
