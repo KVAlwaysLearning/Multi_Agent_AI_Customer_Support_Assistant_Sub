@@ -27,6 +27,13 @@ export default function Chat() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    router.push("/login");
+    return;
+  }
+
+  useEffect(() => {
     const id = getOrCreateSessionId();
     setSessionId(id);
     getHistory(id)
