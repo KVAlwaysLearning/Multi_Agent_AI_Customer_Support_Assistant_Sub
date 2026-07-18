@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { sendMessage, getHistory } from "../services/api";
 
 function getOrCreateSessionId() {
@@ -20,6 +21,7 @@ const AGENT_COLORS = {
 };
 
 export default function Chat() {
+  const router = useRouter();
   const [sessionId, setSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -27,21 +29,12 @@ export default function Chat() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-  const token = localStorage.getItem("access_token");
-  if (!token) {
-    router.push("/login");
-    return;
-  }
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
 
-  useEffect(() => {
-    const id = getOrCreateSessionId();
-    setSessionId(id);
-    getHistory(id)
-      .then((d) => setMessages(d.messages || []))
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
     const id = getOrCreateSessionId();
     setSessionId(id);
 
