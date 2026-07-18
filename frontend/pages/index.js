@@ -35,6 +35,7 @@ export default function Chat() {
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState(null);
   const [sidebarRefreshKey, setSidebarRefreshKey] = useState(0);
+  const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -118,6 +119,36 @@ export default function Chat() {
       .catch(() => setError("Could not load that conversation."));
   }
 
+  function handleVoiceInput() {
+    const SpeechRecognition = typeof window !== "undefined"
+      ? (window.SpeechRecognition || window.webkitSpeechRecognition)
+      : null;
+
+    if (!SpeechRecognition) {
+      setError("Voice input isn't supported in this browser. Try Chrome or Edge.");
+      return;
+    }
+    if (isListening) return;
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onerror = () => {
+      setIsListening(false);
+      setError("Couldn't hear that. Please try again.");
+    };
+    recognition.onend = () => setIsListening(false);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+    };
+
+    recognition.start();
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex h-[85vh] overflow-hidden">
@@ -136,6 +167,9 @@ export default function Chat() {
               <p className="text-blue-100 text-xs">Multi-Agent AI Assistant</p>
             </div>
             <div className="flex gap-2">
+              <a href="/tickets" className="text-xs text-blue-100 hover:text-white border border-blue-300 rounded-full px-3 py-1">
+                Tickets
+              </a>
               <a href="/analytics" className="text-xs text-blue-100 hover:text-white border border-blue-300 rounded-full px-3 py-1">
                 Analytics
               </a>
@@ -206,6 +240,19 @@ export default function Chat() {
               onChange={(e) => setInput(e.target.value)}
               disabled={isTyping}
             />
+            <button
+              type="button"
+              onClick={handleVoiceInput}
+              disabled={isTyping}
+              title={isListening ? "Listening..." : "Speak your message"}
+              className={`px-3 py-2 rounded-full text-sm transition-colors ${
+                isListening
+                  ? "bg-red-500 text-white animate-pulse"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              } disabled:opacity-50`}
+            >
+              🎤
+            </button>
             <button type="submit" disabled={isTyping || !input.trim()}
               className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-5 py-2 rounded-full text-sm font-medium transition-colors">
               Send
