@@ -30,7 +30,7 @@ AGENT_REGISTRY = {
 
 
 @router_api.post("/chat", response_model=ChatResponse)
-def chat(req: ChatRequest):
+def chat(req: ChatRequest, user_email: str = Depends(get_current_user)):
     trace = Trace(session_id=req.session_id, message=req.message)
 
     # 1. Save user message
