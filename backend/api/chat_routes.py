@@ -5,7 +5,7 @@ this endpoint IS the verification mechanism for "is everything wired
 correctly", independent of whether any individual bucket's logic is real yet.
 """
 import time
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from models.schemas import ChatRequest, ChatResponse, Message, ConversationHistory
 from core.trace import Trace
 from agents.intent_detection import detect_intent
@@ -16,7 +16,7 @@ from agents.technical import TechnicalAgent
 from agents.product import ProductAgent
 from agents.complaint import ComplaintAgent
 from agents.faq import FAQAgent
-from database import mongo
+from api.auth_routes import get_current_user
 
 router_api = APIRouter(tags=["chat"])
 
