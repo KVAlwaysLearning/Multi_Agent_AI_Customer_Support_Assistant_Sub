@@ -79,6 +79,21 @@ class RegisterRequest(BaseModel):
     name: str
 
 
+class TicketCreateRequest(BaseModel):
+    subject: str
+    description: str
+    session_id: Optional[str] = None
+
+
+class Ticket(BaseModel):
+    ticket_id: str
+    subject: str
+    description: str
+    status: str
+    created_at: float
+    session_id: Optional[str] = None
+
+
 class LoginRequest(BaseModel):
     email: str
     password: str
