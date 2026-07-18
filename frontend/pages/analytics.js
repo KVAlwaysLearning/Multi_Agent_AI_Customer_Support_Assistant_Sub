@@ -6,6 +6,7 @@ export default function Analytics() {
   const router = useRouter();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [agentsData, setAgentsData] = useState(null);
 
   const RENDER = process.env.NEXT_PUBLIC_API_URL;
 
@@ -14,6 +15,11 @@ export default function Analytics() {
       .then((r) => r.json())
       .then((d) => { setStats(d); setLoading(false); })
       .catch(() => setLoading(false));
+
+    fetch(`${RENDER}/agents`)
+      .then((r) => r.json())
+      .then((d) => setAgentsData(d))
+      .catch(() => setAgentsData(null));
   }, []);
 
   const agentColors = {
@@ -92,20 +98,31 @@ export default function Analytics() {
 
             {/* Agents Info */}
             <div className="bg-white rounded-xl p-6 shadow md:col-span-2">
-              <p className="text-sm font-semibold text-gray-700 mb-4">Agent Capabilities</p>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-semibold text-gray-700">Agent Capabilities</p>
+                {agentsData && (
+                  <span className="text-xs font-medium px-3 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
+                    {agentsData.total_active} agents live &amp; active
+                  </span>
+                )}
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {[
-                  { name: "Billing", desc: "Payments, invoices, subscriptions", color: "blue" },
-                  { name: "Technical", desc: "Login, errors, installation", color: "purple" },
-                  { name: "Product", desc: "Features, pricing, comparisons", color: "green" },
-                  { name: "Complaint", desc: "Escalations, dissatisfaction", color: "red" },
-                  { name: "FAQ", desc: "Policies, shipping, warranty", color: "yellow" },
-                ].map((a) => (
-                  <div key={a.name} className={`p-3 rounded-lg bg-${a.color}-50 border border-${a.color}-100`}>
-                    <p className={`font-semibold text-${a.color}-700 text-sm`}>{a.name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{a.desc}</p>
+                {(agentsData?.agents || []).map((a) => (
+                  <div key={a.name} className="p-3 rounded-lg border"
+                    style={{ backgroundColor: `${agentColors[a.name] || "#6B7280"}0D`, borderColor: `${agentColors[a.name] || "#6B7280"}33` }}>
+                    <div className="flex items-center justify-between">
+                      <p className="font-semibold text-sm" style={{ color: agentColors[a.name] || "#374151" }}>
+                        {a.label}
+                      </p>
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" title="Active"></span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-0.5">{a.description}</p>
                   </div>
                 ))}
+                {!agentsData && (
+                  <p className="text-gray-400 text-sm col-span-full">Could not load agent status.</p>
+                )}
               </div>
             </div>
           </div>
