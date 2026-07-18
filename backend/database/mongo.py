@@ -148,3 +148,38 @@ def get_stats() -> dict:
                 for a in m["agent_used"].split(","):
                     agent_usage[a.strip()] = agent_usage.get(a.strip(), 0) + 1
     return {"total_conversations": total, "agent_usage": agent_usage}
+
+
+# --- Support tickets ---
+
+_in_memory_tickets = {}  # ticket_id -> ticket dict
+
+
+def _generate_ticket_id() -> str:
+    import uuid
+    return f"TCK-{uuid.uuid4().hex[:8].upper()}"
+
+
+def create_ticket(user_email: str, subject: str, description: str, session_id: str = None) -> dict:
+    ticket = {
+        "ticket_id": _generate_ticket_id(),
+        "user_email": user_email,
+        "subject": subject,
+        "description": description,
+        "session_id": session_id,
+        "status": "Under Review",
+        "created_at": time.time(),
+    }
+    if is_using_mongo():
+        _db.tickets.insert_one(ticket)
+    else:
+        _in_memory_tickets[ticket["ticket_id"]] = ticket
+    return ticket
+
+
+def list_tickets_for_user(user_email: str) -> list:
+    if is_using_mongo():
+        docs = list(_db.tickets.find({"user_email": user_email}, {"_id": 0}))
+    else:
+        docs = [t for t in _in_memory_tickets.values() if t["user_email"] == user_email]
+    return sorted(docs, key=lambda t: t["created_at"], reverse=True)
