@@ -5,6 +5,8 @@ from core.llm import is_stub_mode
 from api.chat_routes import router_api
 from api.auth_routes import router as auth_router
 from api.analytics_routes import router as analytics_router
+from api.ticket_routes import router as ticket_router
+from api.agents_routes import router as agents_router
 
 app = FastAPI(title=settings.APP_NAME)
 
@@ -19,6 +21,8 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(router_api)
 app.include_router(analytics_router)
+app.include_router(ticket_router)
+app.include_router(agents_router)
 
 
 @app.get("/")
