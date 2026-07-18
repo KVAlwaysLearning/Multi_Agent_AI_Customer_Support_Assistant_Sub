@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { sendMessage, getHistory } from "../services/api";
- 
+
 function getOrCreateSessionId() {
   if (typeof window === "undefined") return null;
   let id = localStorage.getItem("session_id");
@@ -11,7 +11,7 @@ function getOrCreateSessionId() {
   }
   return id;
 }
- 
+
 const AGENT_COLORS = {
   billing: "bg-blue-100 text-blue-800",
   technical: "bg-purple-100 text-purple-800",
@@ -19,7 +19,7 @@ const AGENT_COLORS = {
   complaint: "bg-red-100 text-red-800",
   faq: "bg-yellow-100 text-yellow-800",
 };
- 
+
 export default function Chat() {
   const router = useRouter();
   const [sessionId, setSessionId] = useState(null);
@@ -27,29 +27,29 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState(null);
- 
+
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) {
       router.push("/login");
       return;
     }
- 
+
     const id = getOrCreateSessionId();
     setSessionId(id);
- 
+
     // Wake up Render backend immediately on page load
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/health`).catch(() => {});
- 
+
     getHistory(id)
       .then((d) => setMessages(d.messages || []))
       .catch(() => {});
   }, []);
- 
+
   useEffect(() => {
     window.scrollTo(0, document.body.scrollHeight);
   }, [messages, isTyping]);
- 
+
   async function handleSend(e) {
     e.preventDefault();
     if (!input.trim() || isTyping) return;
@@ -75,13 +75,13 @@ export default function Chat() {
       setIsTyping(false);
     }
   }
- 
+
   function handleNew() {
     localStorage.removeItem("session_id");
     setSessionId(getOrCreateSessionId());
     setMessages([]);
   }
- 
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col h-[85vh]">
@@ -100,7 +100,7 @@ export default function Chat() {
             </button>
           </div>
         </div>
- 
+
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {messages.length === 0 && (
@@ -117,7 +117,7 @@ export default function Chat() {
               </div>
             </div>
           )}
- 
+
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-xs lg:max-w-md ${m.role === "user" ? "items-end" : "items-start"} flex flex-col gap-1`}>
@@ -140,7 +140,7 @@ export default function Chat() {
               </div>
             </div>
           ))}
- 
+
           {isTyping && (
             <div className="flex justify-start">
               <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-3">
@@ -153,9 +153,9 @@ export default function Chat() {
             </div>
           )}
         </div>
- 
+
         {error && <div className="px-4 py-2 text-xs text-red-600 bg-red-50 text-center">{error}</div>}
- 
+
         {/* Input */}
         <form onSubmit={handleSend} className="flex gap-2 p-4 border-t">
           <input
