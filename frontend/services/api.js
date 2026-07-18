@@ -33,6 +33,11 @@ export async function getHistory(sessionId) {
   return data;
 }
 
+export async function listConversations() {
+  const { data } = await api.get("/conversations");
+  return data;
+}
+
 export async function register(email, password, name) {
   const { data } = await api.post("/auth/register", {
     email,
