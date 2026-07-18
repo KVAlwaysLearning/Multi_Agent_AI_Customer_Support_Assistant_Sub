@@ -5,8 +5,9 @@ this endpoint IS the verification mechanism for "is everything wired
 correctly", independent of whether any individual bucket's logic is real yet.
 """
 import time
-from fastapi import APIRouter, Depends
-from models.schemas import ChatRequest, ChatResponse, Message, ConversationHistory
+from typing import List
+from fastapi import APIRouter, Depends, HTTPException
+from models.schemas import ChatRequest, ChatResponse, Message, ConversationHistory, ConversationSummary
 from core.trace import Trace
 from agents.intent_detection import detect_intent
 from agents.router import route
@@ -32,10 +33,13 @@ AGENT_REGISTRY = {
 
 @router_api.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest, user_email: str = Depends(get_current_user)):
+    if not mongo.is_owner_or_new(req.session_id, user_email):
+        raise HTTPException(status_code=403, detail="This chat belongs to another account.")
+
     trace = Trace(session_id=req.session_id, message=req.message)
 
     # 1. Save user message
-    mongo.append_message(req.session_id, role="user", text=req.message)
+    mongo.append_message(req.session_id, role="user", text=req.message, user_email=user_email)
     trace.log("memory:save_user_message", {"session_id": req.session_id})
 
     # 2. Intent detection
@@ -47,7 +51,7 @@ def chat(req: ChatRequest, user_email: str = Depends(get_current_user)):
     # 4. Invoke agent(s) with conversation history
     past_messages = mongo.get_messages(req.session_id)
     recent_history = past_messages[-6:] if len(past_messages) > 6 else past_messages
-    
+
     agent_responses = []
     for agent_name in decision.agents:
         agent = AGENT_REGISTRY.get(agent_name)
@@ -64,7 +68,10 @@ def chat(req: ChatRequest, user_email: str = Depends(get_current_user)):
     final_text = aggregate(agent_responses, trace)
 
     # 6. Save AI response
-    mongo.append_message(req.session_id, role="ai", text=final_text, agent_used=",".join(decision.agents))
+    mongo.append_message(
+        req.session_id, role="ai", text=final_text,
+        agent_used=",".join(decision.agents), user_email=user_email,
+    )
     trace.log("memory:save_ai_message", {"session_id": req.session_id})
 
     return ChatResponse(
@@ -74,8 +81,17 @@ def chat(req: ChatRequest, user_email: str = Depends(get_current_user)):
     )
 
 
+@router_api.get("/conversations", response_model=List[ConversationSummary])
+def list_conversations(user_email: str = Depends(get_current_user)):
+    """Sidebar data: every conversation this logged-in user has, across devices."""
+    return mongo.list_conversations_for_user(user_email)
+
+
 @router_api.get("/conversations/{session_id}", response_model=ConversationHistory)
 def get_conversation(session_id: str, user_email: str = Depends(get_current_user)):
+    if not mongo.is_owner_or_new(session_id, user_email):
+        raise HTTPException(status_code=403, detail="This chat belongs to another account.")
+
     raw = mongo.get_messages(session_id)
     messages = [
         Message(role=m["role"], text=m["text"], agent_used=m.get("agent_used"), timestamp=m["timestamp"])
