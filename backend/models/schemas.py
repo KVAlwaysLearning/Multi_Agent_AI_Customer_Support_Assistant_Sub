@@ -66,6 +66,13 @@ class ConversationHistory(BaseModel):
     messages: List[Message]
 
 
+class ConversationSummary(BaseModel):
+    session_id: str
+    title: str
+    updated_at: float
+    message_count: int
+
+
 class RegisterRequest(BaseModel):
     email: str
     password: str
