@@ -38,6 +38,25 @@ export async function listConversations() {
   return data;
 }
 
+export async function createTicket(subject, description, sessionId) {
+  const { data } = await api.post("/tickets", {
+    subject,
+    description,
+    session_id: sessionId,
+  });
+  return data;
+}
+
+export async function listTickets() {
+  const { data } = await api.get("/tickets");
+  return data;
+}
+
+export async function listAgents() {
+  const { data } = await api.get("/agents");
+  return data;
+}
+
 export async function register(email, password, name) {
   const { data } = await api.post("/auth/register", {
     email,
